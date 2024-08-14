@@ -1,4 +1,4 @@
-import { DISCORD_PORTALS, TELEGRAM_PORTALS } from "./settings";
+import { DISCORD_EMOJIES, DISCORD_PORTALS, TELEGRAM_EMOJIES, TELEGRAM_PORTALS } from "./settings";
 import { AudioMeta } from "./types";
 import { AudioContext } from 'node-web-audio-api';
 
@@ -15,6 +15,16 @@ export function discordToTelegram (discordPortalId: string) {
 export function telegramToDiscord (telegramPortalId: string) {
     const targetPortal = TELEGRAM_PORTALS.indexOf(telegramPortalId);
     return DISCORD_PORTALS[targetPortal];
+}
+
+export function emojiDiscordToTelegram (discordEmoji: string) {
+    const targetEmoji = DISCORD_EMOJIES.findIndex(f => f[0] == discordEmoji);
+    return TELEGRAM_EMOJIES[targetEmoji];
+}
+
+export function emojiTelegramToDiscord (telegramEmoji: string) {
+    const targetEmoji = TELEGRAM_EMOJIES.findIndex(f => f[0] == telegramEmoji);
+    return DISCORD_EMOJIES[targetEmoji];
 }
 
 export const clamp = (val, min, max) => Math.min(Math.max(val, min), max)
@@ -91,6 +101,7 @@ export function discordMdToTelegramHtml(oldText: string): string {
         .replace(/^-# (.*$)/gm, '<code>$1</code>')                   // Convert subtext (-# code)
         .replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>')        // Convert blockquotes (> text)
         .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')  // Convert links ([text](url))
+        .replace(/&lt;:(.+?):(\d+)&gt;/g, '<code>:$1:</code>');      // Custom emojis
 
     for (const [key, value] of Object.entries(placeholders)) {
         newText = newText.replaceAll(value, key.substring(1)); // Remove the backslash in the replacement

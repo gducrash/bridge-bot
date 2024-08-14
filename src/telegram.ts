@@ -27,6 +27,8 @@ bot.on('message', async ctx => {
     let voiceUrl: string|undefined;
     let mediaUrls: BridgeMessageMedia[]|undefined;
 
+    console.log(ctx.entities());
+
     if (umsg.voice) {
         voiceUrl = (await bot.telegram.getFileLink(umsg.voice.file_id)).href;
     }

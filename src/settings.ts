@@ -12,20 +12,18 @@ export const TELEGRAM_PORTALS = [
 ];
 
 
-export const DISCORD_EMOJIES = [
-    '1272954464768102421', // bazinga
-    '1272951866946228257', // antibazinga
-    '1272950388835750032', // mystery box
-    '1272949986849587324', // lmfao
-    '1272949988615262228', // wheeze
+export const DISCORD_EMOJIES: [string, string][] = [
+    ['1272954464768102421', 'bazinga'],      // bazinga
+    ['1272951866946228257', 'antibazinga'], // antibazinga
+    ['1272950388835750032', 'box'],        // mystery box
+    ['1272949986849587324', 'lmfao'],     // lmfao
 ];
 
-export const TELEGRAM_EMOJIES = [
-    '1272954464768102421', // bazinga
-    '1272951866946228257', // antibazinga
-    '1272950388835750032', // mystery box
-    '1272949986849587324', // lmfao
-    '1272949988615262228', // wheeze
+export const TELEGRAM_EMOJIES: [string, string][] = [
+    ['5436203221091633963', '😀'], // bazinga
+    ['5438256030775530060', '➖'], // antibazinga
+    ['5294042681222117644', '📦'], // mystery box
+    ['5336838469798862584', '😂'], // lmfao
 ];
 
 
