@@ -51,6 +51,54 @@ export async function getAudioMeta (blob: Blob): Promise<AudioMeta> {
     };
 }
 
+export function escapeHtml(str: string): string {
+    return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+}
+
+export function discordMdToTelegramHtml(oldText: string): string {
+    // Escape html
+    oldText = escapeHtml(oldText);
+
+    // Escape special characters by replacing them with temporary placeholders
+    const placeholders = {
+        '\\*': '<ESCAPEDASTERISK>',
+        '\\_': '<ESCAPEDUNDERSCORE>',
+        '\\~': '<ESCAPEDTILDE>',
+        '\\`': '<ESCAPEDBACKTICK>',
+        '\\|': '<ESCAPEDLINE>',
+        '\\#': '<ESCAPEDHASH>',
+        '\\-': '<ESCAPEDDASH>',
+        '\\>': '<ESCAPEDGT>',
+    };
+    
+    for (const [key, value] of Object.entries(placeholders)) {
+        oldText = oldText.replaceAll(key, value);
+    }
+
+    let newText = oldText
+        .replace(/\*\*\*(.*?)\*\*\*/g, '<b><i>$1</i></b>')           // bold-italic (***text***)
+        .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')                      // bold (**text**)
+        .replace(/\*(.*?)\*/g, '<i>$1</i>')                          // italics (*text*)
+        .replace(/_(.*?)_/g, '<i>$1</i>')
+        .replace(/__(.*?)__/g, '<u>$1</u>')                          // underline (__text__)
+        .replace(/~~(.*?)~~/g, '<s>$1</s>')                          // strikethrough (~~text~~)
+        .replace(/\|\|(.*?)\|\|/g, '<tg-spoiler>$1</tg-spoiler>')    // spoiler (||text||)
+        .replace(/```([^`]+)```/gs, '<pre><code>$1</code></pre>')    // Convert code blocks (```code```)
+        .replace(/`([^`]+)`/g, '<code>$1</code>')                    // Convert inline code (`code`)
+        .replace(/^-# (.*$)/gm, '<code>$1</code>')                   // Convert subtext (-# code)
+        .replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>')        // Convert blockquotes (> text)
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')  // Convert links ([text](url))
+
+    for (const [key, value] of Object.entries(placeholders)) {
+        newText = newText.replaceAll(value, key.substring(1)); // Remove the backslash in the replacement
+    }
+
+    return newText;
+}
+
 export function convertContentType (contentType: string) {
     if (contentType.startsWith('video/')) return 'video';
     if (contentType.startsWith('image/')) return 'photo';

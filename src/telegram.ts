@@ -2,9 +2,9 @@ import { Context, Telegraf } from 'telegraf';
 import { BridgeMessage, BridgeMessageMedia } from './types';
 import { Message, User } from 'telegraf/typings/core/types/typegram';
 import { TELEGRAM_CHAT_ID } from './settings';
-import { telegramToDiscord } from './helpers';
+import { discordMdToTelegramHtml, escapeHtml, telegramToDiscord } from './helpers';
 import { registerMessageCreate, registerMessageDelete, registerMessageEdit } from './bridge';
-import { MediaGroup } from 'telegraf/typings/telegram-types';
+import { ExtraReplyMessage, MediaGroup } from 'telegraf/typings/telegram-types';
 
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 const startDate = new Date();
@@ -102,7 +102,7 @@ bot.on('edited_message', async ctx => {
 
 export async function postMessage (message: BridgeMessage) {
     // construct hybrid text messages to send
-    const text = `${message.author.name}: ${message.content}`;
+    const text = `<b>${escapeHtml(message.author.name)}</b>: ${discordMdToTelegramHtml(message.content)}`;
     const captionText = `${message.author.name}:`;
     let newMsg: Message;
 
@@ -110,7 +110,8 @@ export async function postMessage (message: BridgeMessage) {
     const extra = {
         message_thread_id: Number(message.portal),
         reply_to_message_id: message.telegramReplyTo && Number(message.telegramReplyTo),
-    } as any;
+        parse_mode: 'HTML',
+    } as ExtraReplyMessage;
 
     // for media and voice messages
     if (message.attachments.voice) {
